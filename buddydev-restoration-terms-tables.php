@@ -14,6 +14,10 @@ class BuddyDev_Terms_Tables_Restoration_Helper {
 
 	public function restore_terms_tables() {
 
+		if ( get_option( 'bd-restored-terms-table' ) || is_main_site() ) {
+			return ;
+		}
+
 		global $wpdb;
 
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
@@ -21,10 +25,6 @@ class BuddyDev_Terms_Tables_Restoration_Helper {
 		$charset_collate = ! empty( $wpdb->charset ) ? "DEFAULT CHARACTER SET {$wpdb->charset}" : '';
 
 		$blog_id = get_current_blog_id();
-
-		if ( $blog_id == 1 ) {
-			return;
-		}
 
 		$max_index_length = 191;
 
@@ -52,6 +52,8 @@ class BuddyDev_Terms_Tables_Restoration_Helper {
 						) $charset_collate;";
 
 		$tables = dbDelta( $blog_tables );
+		
+		update_option( 'bd-restored-terms-table', 1 );
 
 	}
 
